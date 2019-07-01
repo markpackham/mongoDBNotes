@@ -1,0 +1,173 @@
+db.createUser({
+user:"admin",
+pwd:"admin",
+roles:["readWrite","dbAdmin"]
+});
+
+
+
+/////////////////
+Commands from following tutorial
+/////////////////
+> show dbs
+admin   0.000GB
+config  0.000GB
+local   0.000GB
+> use mycustomers
+switched to db mycustomers
+> db
+mycustomers
+> db.createUser({
+... user:"admin",
+... pwd:"admin",
+... roles:["readWrite","dbAdmin"]
+... });
+Successfully added user: { "user" : "admin", "roles" : [ "readWrite", "dbAdmin" ] }
+> db.createCollection('customers');
+{ "ok" : 1 }
+> show collections
+customers
+> db.customers.insert({first_name:"John",last_name:"Smith"});
+WriteResult({ "nInserted" : 1 })
+> db.customers.find();
+{ "_id" : ObjectId("5d1a0bdd78f204cac0af5294"), "first_name" : "John", "last_name" : "Smith" }
+> db.customers.insert([{first_name:"Jim",last_name:"Smith"},{first_name:"Joe",last_name:"Smythington",gender:"male"}]);
+BulkWriteResult({
+        "writeErrors" : [ ],
+        "writeConcernErrors" : [ ],
+        "nInserted" : 2,
+        "nUpserted" : 0,
+        "nMatched" : 0,
+        "nModified" : 0,
+        "nRemoved" : 0,
+        "upserted" : [ ]
+})
+> db.customers.find();
+{ "_id" : ObjectId("5d1a0bdd78f204cac0af5294"), "first_name" : "John", "last_name" : "Smith" }
+{ "_id" : ObjectId("5d1a0d2278f204cac0af5295"), "first_name" : "Jim", "last_name" : "Smith" }
+{ "_id" : ObjectId("5d1a0d2278f204cac0af5296"), "first_name" : "Joe", "last_name" : "Smythington", "gender" : "male" }
+> db.customers.find().pretty();
+{
+        "_id" : ObjectId("5d1a0bdd78f204cac0af5294"),
+        "first_name" : "John",
+        "last_name" : "Smith"
+}
+{
+        "_id" : ObjectId("5d1a0d2278f204cac0af5295"),
+        "first_name" : "Jim",
+        "last_name" : "Smith"
+}
+{
+        "_id" : ObjectId("5d1a0d2278f204cac0af5296"),
+        "first_name" : "Joe",
+        "last_name" : "Smythington",
+        "gender" : "male"
+}
+> db.custoemrs.update({first_name:"John"},{first_name:"Jojo",last_name:"Platinum",gender:"male"});
+WriteResult({ "nMatched" : 0, "nUpserted" : 0, "nModified" : 0 })
+> db.customers.find().pretty();
+{
+        "_id" : ObjectId("5d1a0bdd78f204cac0af5294"),
+        "first_name" : "John",
+        "last_name" : "Smith"
+}
+{
+        "_id" : ObjectId("5d1a0d2278f204cac0af5295"),
+        "first_name" : "Jim",
+        "last_name" : "Smith"
+}
+{
+        "_id" : ObjectId("5d1a0d2278f204cac0af5296"),
+        "first_name" : "Joe",
+        "last_name" : "Smythington",
+        "gender" : "male"
+}
+> db.customers.update({first_name:"John"},{first_name:"Jojo",last_name:"Platinum",gender:"male"});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.customers.find().pretty();
+{
+        "_id" : ObjectId("5d1a0bdd78f204cac0af5294"),
+        "first_name" : "Jojo",
+        "last_name" : "Platinum",
+        "gender" : "male"
+}
+{
+        "_id" : ObjectId("5d1a0d2278f204cac0af5295"),
+        "first_name" : "Jim",
+        "last_name" : "Smith"
+}
+{
+        "_id" : ObjectId("5d1a0d2278f204cac0af5296"),
+        "first_name" : "Joe",
+        "last_name" : "Smythington",
+        "gender" : "male"
+}
+> db.customers.update({first_name:"Jim"},{$set:"gender:"male"});
+2019-07-01T14:47:33.152+0100 E QUERY    [js] SyntaxError: missing } after property list @(shell):1:54
+> db.customers.update({first_name:"Jim"},{$set:{gender:"male"}});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.customers.find().pretty();
+{
+        "_id" : ObjectId("5d1a0bdd78f204cac0af5294"),
+        "first_name" : "Jojo",
+        "last_name" : "Platinum",
+        "gender" : "male"
+}
+{
+        "_id" : ObjectId("5d1a0d2278f204cac0af5295"),
+        "first_name" : "Jim",
+        "last_name" : "Smith",
+        "gender" : "male"
+}
+{
+        "_id" : ObjectId("5d1a0d2278f204cac0af5296"),
+        "first_name" : "Joe",
+        "last_name" : "Smythington",
+        "gender" : "male"
+}
+> db.customers.update({first_name:"Jim"},{$set:{age:89}});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.customers.update({first_name:"Jim"},{$inc:{age:10}});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.customers.find().pretty();
+{
+        "_id" : ObjectId("5d1a0bdd78f204cac0af5294"),
+        "first_name" : "Jojo",
+        "last_name" : "Platinum",
+        "gender" : "male"
+}
+{
+        "_id" : ObjectId("5d1a0d2278f204cac0af5295"),
+        "first_name" : "Jim",
+        "last_name" : "Smith",
+        "gender" : "male",
+        "age" : 99
+}
+{
+        "_id" : ObjectId("5d1a0d2278f204cac0af5296"),
+        "first_name" : "Joe",
+        "last_name" : "Smythington",
+        "gender" : "male"
+}
+> db.customers.update({first_name:"Jim"},{$unset:{age:1}});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.customers.find().pretty();
+{
+        "_id" : ObjectId("5d1a0bdd78f204cac0af5294"),
+        "first_name" : "Jojo",
+        "last_name" : "Platinum",
+        "gender" : "male"
+}
+{
+        "_id" : ObjectId("5d1a0d2278f204cac0af5295"),
+        "first_name" : "Jim",
+        "last_name" : "Smith",
+        "gender" : "male"
+}
+{
+        "_id" : ObjectId("5d1a0d2278f204cac0af5296"),
+        "first_name" : "Joe",
+        "last_name" : "Smythington",
+        "gender" : "male"
+}
+>  
