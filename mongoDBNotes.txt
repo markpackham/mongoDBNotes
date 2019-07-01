@@ -170,4 +170,41 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
         "last_name" : "Smythington",
         "gender" : "male"
 }
+> db.customers.update({first_name:"Mary"},{first_name:"Mary",last_name:"Lamb"},{upset:true});
+WriteResult({ "nMatched" : 0, "nUpserted" : 0, "nModified" : 0 })
+> db.customers.update({first_name:"Mary"},{first_name:"Mary",last_name:"Lamb"},{upsert:true});
+WriteResult({
+        "nMatched" : 0,
+        "nUpserted" : 1,
+        "nModified" : 0,
+        "_id" : ObjectId("5d1a139bf5e50d5ef2224874")
+})
+> db.customers.update({first_name:"Jim"},{$rename:{"gender":"sex"}});
+WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+> db.customers.find().pretty();
+{
+        "_id" : ObjectId("5d1a0bdd78f204cac0af5294"),
+        "first_name" : "Jojo",
+        "last_name" : "Platinum",
+        "gender" : "male"
+}
+{
+        "_id" : ObjectId("5d1a0d2278f204cac0af5295"),
+        "first_name" : "Jim",
+        "last_name" : "Smith",
+        "sex" : "male"
+}
+{
+        "_id" : ObjectId("5d1a0d2278f204cac0af5296"),
+        "first_name" : "Joe",
+        "last_name" : "Smythington",
+        "gender" : "male"
+}
+{
+        "_id" : ObjectId("5d1a139bf5e50d5ef2224874"),
+        "first_name" : "Mary",
+        "last_name" : "Lamb"
+}
+> db.customers.remove({first_name:"Mary"});
+WriteResult({ "nRemoved" : 1 })
 >  
