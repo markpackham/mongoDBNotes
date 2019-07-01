@@ -7,26 +7,32 @@ roles:["readWrite","dbAdmin"]
 
 
 /////////////////
-Commands from following tutorial
-/////////////////
 > show dbs
 admin   0.000GB
 config  0.000GB
 local   0.000GB
+
+Use & Create DB
 > use mycustomers
 switched to db mycustomers
 > db
 mycustomers
+
+Create User
 > db.createUser({
 ... user:"admin",
 ... pwd:"admin",
 ... roles:["readWrite","dbAdmin"]
 ... });
 Successfully added user: { "user" : "admin", "roles" : [ "readWrite", "dbAdmin" ] }
+
+Create & Show Collection
 > db.createCollection('customers');
 { "ok" : 1 }
 > show collections
 customers
+
+Insert Users
 > db.customers.insert({first_name:"John",last_name:"Smith"});
 WriteResult({ "nInserted" : 1 })
 > db.customers.find();
@@ -42,6 +48,8 @@ BulkWriteResult({
         "nRemoved" : 0,
         "upserted" : [ ]
 })
+
+Find aka Select
 > db.customers.find();
 { "_id" : ObjectId("5d1a0bdd78f204cac0af5294"), "first_name" : "John", "last_name" : "Smith" }
 { "_id" : ObjectId("5d1a0d2278f204cac0af5295"), "first_name" : "Jim", "last_name" : "Smith" }
@@ -63,25 +71,8 @@ BulkWriteResult({
         "last_name" : "Smythington",
         "gender" : "male"
 }
-> db.custoemrs.update({first_name:"John"},{first_name:"Jojo",last_name:"Platinum",gender:"male"});
-WriteResult({ "nMatched" : 0, "nUpserted" : 0, "nModified" : 0 })
-> db.customers.find().pretty();
-{
-        "_id" : ObjectId("5d1a0bdd78f204cac0af5294"),
-        "first_name" : "John",
-        "last_name" : "Smith"
-}
-{
-        "_id" : ObjectId("5d1a0d2278f204cac0af5295"),
-        "first_name" : "Jim",
-        "last_name" : "Smith"
-}
-{
-        "_id" : ObjectId("5d1a0d2278f204cac0af5296"),
-        "first_name" : "Joe",
-        "last_name" : "Smythington",
-        "gender" : "male"
-}
+
+Update
 > db.customers.update({first_name:"John"},{first_name:"Jojo",last_name:"Platinum",gender:"male"});
 WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
 > db.customers.find().pretty();
@@ -102,8 +93,8 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
         "last_name" : "Smythington",
         "gender" : "male"
 }
-> db.customers.update({first_name:"Jim"},{$set:"gender:"male"});
-2019-07-01T14:47:33.152+0100 E QUERY    [js] SyntaxError: missing } after property list @(shell):1:54
+
+Update & Set (use Set to avoid having to type every single field out when doing an update)
 > db.customers.update({first_name:"Jim"},{$set:{gender:"male"}});
 WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
 > db.customers.find().pretty();
@@ -125,8 +116,12 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
         "last_name" : "Smythington",
         "gender" : "male"
 }
+
+Set
 > db.customers.update({first_name:"Jim"},{$set:{age:89}});
 WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+Increament Value (so increase age by 10)
 > db.customers.update({first_name:"Jim"},{$inc:{age:10}});
 WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
 > db.customers.find().pretty();
@@ -149,6 +144,8 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
         "last_name" : "Smythington",
         "gender" : "male"
 }
+
+Remove / Unset field
 > db.customers.update({first_name:"Jim"},{$unset:{age:1}});
 WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
 > db.customers.find().pretty();
@@ -170,8 +167,9 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
         "last_name" : "Smythington",
         "gender" : "male"
 }
-> db.customers.update({first_name:"Mary"},{first_name:"Mary",last_name:"Lamb"},{upset:true});
-WriteResult({ "nMatched" : 0, "nUpserted" : 0, "nModified" : 0 })
+
+
+Update Insert (insert if doesn't already exist)
 > db.customers.update({first_name:"Mary"},{first_name:"Mary",last_name:"Lamb"},{upsert:true});
 WriteResult({
         "nMatched" : 0,
@@ -179,8 +177,12 @@ WriteResult({
         "nModified" : 0,
         "_id" : ObjectId("5d1a139bf5e50d5ef2224874")
 })
+
+Rename
 > db.customers.update({first_name:"Jim"},{$rename:{"gender":"sex"}});
 WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+Pretty Results
 > db.customers.find().pretty();
 {
         "_id" : ObjectId("5d1a0bdd78f204cac0af5294"),
@@ -205,6 +207,53 @@ WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
         "first_name" : "Mary",
         "last_name" : "Lamb"
 }
+
+Remove Record
 > db.customers.remove({first_name:"Mary"});
 WriteResult({ "nRemoved" : 1 })
+
+Find using Or
+> db.customers.find({$or:[{first_name:"Jim"},{first_name:"Joe"}]});
+{ "_id" : ObjectId("5d1a0d2278f204cac0af5295"), "first_name" : "Jim", "last_name" : "Smith", "sex" : "male" }
+{ "_id" : ObjectId("5d1a0d2278f204cac0af5296"), "first_name" : "Joe", "last_name" : "Smythington", "gender" : "male" }
+
+Find Less Than, Great Than or Equal To number
+> db.customers.find({age:{$lt:70}});
+> db.customers.find({age:{$gt:70}});
+> db.customers.find({age:{$gte:70}});
+> db.customers.find({age:{$lte:70}});
+
+Sort Asc
+> db.customers.find().sort({last_name:1});
+{ "_id" : ObjectId("5d1a0bdd78f204cac0af5294"), "first_name" : "Jojo", "last_name" : "Platinum", "gender" : "male" }
+{ "_id" : ObjectId("5d1a0d2278f204cac0af5295"), "first_name" : "Jim", "last_name" : "Smith", "sex" : "male" }
+{ "_id" : ObjectId("5d1a0d2278f204cac0af5296"), "first_name" : "Joe", "last_name" : "Smythington", "gender" : "male" }
+
+Sort Desc
+> db.customers.find().sort({last_name:-1});
+{ "_id" : ObjectId("5d1a0d2278f204cac0af5296"), "first_name" : "Joe", "last_name" : "Smythington", "gender" : "male" }
+{ "_id" : ObjectId("5d1a0d2278f204cac0af5295"), "first_name" : "Jim", "last_name" : "Smith", "sex" : "male" }
+{ "_id" : ObjectId("5d1a0bdd78f204cac0af5294"), "first_name" : "Jojo", "last_name" : "Platinum", "gender" : "male" }
+
+Count
+> db.customers.find().count();
+3
+> db.customers.find({gender:"male"}).count();
+2
+
+Limit
+> db.customers.find().limit(2);
+{ "_id" : ObjectId("5d1a0bdd78f204cac0af5294"), "first_name" : "Jojo", "last_name" : "Platinum", "gender" : "male" }
+{ "_id" : ObjectId("5d1a0d2278f204cac0af5295"), "first_name" : "Jim", "last_name" : "Smith", "sex" : "male" }
+
+Find & Limit & Sort
+> db.customers.find().limit(2).sort({last_name:-1});
+{ "_id" : ObjectId("5d1a0d2278f204cac0af5296"), "first_name" : "Joe", "last_name" : "Smythington", "gender" : "male" }
+{ "_id" : ObjectId("5d1a0d2278f204cac0af5295"), "first_name" : "Jim", "last_name" : "Smith", "sex" : "male" }
+
+forEach print
+> db.customers.find().forEach(function(doc){print("Customer Name: "+doc.first_name)});
+Customer Name: Jojo
+Customer Name: Jim
+Customer Name: Joe
 >  
