@@ -259,3 +259,9 @@ db.posts.find({ views: { $gte: 7 } })
 db.posts.find({ views: { $lt: 7 } })
 db.posts.find({ views: { $lte: 7 } })
 ```
+
+## Another good tutorial from September 2021
+## The more recent one made by Web Dev Simplified
+```
+https://www.youtube.com/watch?v=ofme2o29ngU
+```
